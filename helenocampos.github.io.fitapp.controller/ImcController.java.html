@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ImcController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">fitapp</a> &gt; <a href="index.source.html" class="el_package">helenocampos.github.io.fitapp.controller</a> &gt; <span class="el_source">ImcController.java</span></div><h1>ImcController.java</h1><pre class="source lang-java linenums">package helenocampos.github.io.fitapp.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import helenocampos.github.io.fitapp.model.ImcGenderResult;
+import helenocampos.github.io.fitapp.model.ImcResult;
+import helenocampos.github.io.fitapp.service.GenderService;
+
+@Controller
+public class ImcController {
+
+    GenderService genderService;
+
+    @Autowired
+<span class="fc" id="L20">    public ImcController(GenderService genderService) {</span>
+<span class="fc" id="L21">        this.genderService = genderService;</span>
+<span class="fc" id="L22">    }</span>
+
+    @GetMapping(&quot;/imc&quot;)
+    public String imcForm() {
+<span class="nc" id="L26">        return &quot;imcForm&quot;;</span>
+    }
+
+    @GetMapping(&quot;/imcGender&quot;)
+    public String imcGenderForm() {
+<span class="nc" id="L31">        return &quot;imcGenderForm&quot;;</span>
+    }
+
+    @PostMapping(&quot;/imc&quot;)
+    public String proccessImcRequest(@RequestParam(&quot;peso&quot;) double peso,
+            @RequestParam(&quot;altura&quot;) double altura,
+            Model model) {
+
+<span class="nc" id="L39">        ImcResult resultado = proccessImc(peso, altura);</span>
+
+<span class="nc" id="L41">        model.addAttribute(&quot;imc&quot;, resultado.getImc());</span>
+<span class="nc" id="L42">        model.addAttribute(&quot;resultado&quot;, resultado.getClassification());</span>
+
+<span class="nc" id="L44">        return &quot;imcForm&quot;;</span>
+    }
+
+    public ImcResult proccessImc(double peso, double altura) {
+<span class="fc" id="L48">        double imc = this.getIMC(peso, altura);</span>
+<span class="fc" id="L49">        String resultado = this.getIMCClassification(imc);</span>
+<span class="fc" id="L50">        return new ImcResult(resultado, imc);</span>
+    }
+
+    public ImcGenderResult proccessImcGender(double peso, double altura, String nome) {
+<span class="nc" id="L54">        double imc = this.getIMC(peso, altura);</span>
+<span class="nc" id="L55">        String gender = genderService.getGenderByName(nome);</span>
+<span class="nc" id="L56">        String resultado = this.getIMCClassificationByGender(imc, gender);</span>
+<span class="nc" id="L57">        String genderURL = genderService.getExternalServiceUrl() + nome;</span>
+<span class="nc" id="L58">        return new ImcGenderResult(resultado, imc, gender, genderURL);</span>
+    }
+
+    @PostMapping(&quot;/imcGender&quot;)
+    public String processImcGenderRequest(@RequestParam(&quot;peso&quot;) double peso,
+            @RequestParam(&quot;altura&quot;) double altura,
+            @RequestParam(&quot;nome&quot;) String nome,
+            Model model) {
+
+<span class="nc" id="L67">        ImcGenderResult resultado = proccessImcGender(peso, altura, nome);</span>
+
+<span class="nc" id="L69">        model.addAttribute(&quot;genero&quot;, getGeneroPt(resultado.getGender()));</span>
+<span class="nc" id="L70">        model.addAttribute(&quot;imc&quot;, resultado.getImc());</span>
+<span class="nc" id="L71">        model.addAttribute(&quot;resultado&quot;, resultado.getClassification());</span>
+<span class="nc" id="L72">        model.addAttribute(&quot;url&quot;, resultado.getRequestUrl());</span>
+<span class="nc" id="L73">        return &quot;imcGenderForm&quot;;</span>
+    }
+
+    public String getGeneroPt(String gender) {
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        if (gender.equals(&quot;male&quot;)) {</span>
+<span class="fc" id="L78">            return &quot;Masculino&quot;;</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">        } else if (gender.equals(&quot;female&quot;)) {</span>
+<span class="fc" id="L80">            return &quot;Feminino&quot;;</span>
+        } else {
+<span class="fc" id="L82">            return &quot;Indefinido&quot;;</span>
+        }
+    }
+
+    public double getIMC(double peso, double altura) {
+<span class="fc" id="L87">        return peso / (altura * altura);</span>
+    }
+
+    public String getIMCClassification(double imc) {
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        if (imc &lt; 18.8) {</span>
+<span class="fc" id="L92">            return &quot;Abaixo do peso&quot;;</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        } else if (imc &lt; 25) {</span>
+<span class="fc" id="L94">            return &quot;Peso normal&quot;;</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">        } else if (imc &lt; 29.9) {</span>
+<span class="fc" id="L96">            return &quot;Excesso de peso&quot;;</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        } else if (imc &lt; 34.9) {</span>
+<span class="fc" id="L98">            return &quot;Obesidade classe I&quot;;</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">        } else if (imc &lt; 39.9) {</span>
+<span class="fc" id="L100">            return &quot;Obesidade classe II&quot;;</span>
+        } else {
+<span class="fc" id="L102">            return &quot;Obesidade classe III&quot;;</span>
+        }
+    }
+
+    public String getIMCClassificationByGender(double imc, String gender) {
+<span class="fc" id="L107">        double thresholdAbaixoPeso = 20;</span>
+<span class="fc" id="L108">        double thresholdNormal = 24.9;</span>
+<span class="fc" id="L109">        double thresholdObesidadeLeve = 29.9;</span>
+<span class="fc" id="L110">        double thresholdObesidadeModerada = 39.9;</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">        if (gender.equals(&quot;female&quot;)) {</span>
+<span class="fc" id="L112">            thresholdAbaixoPeso -= 1;</span>
+<span class="fc" id="L113">            thresholdNormal -= 1;</span>
+<span class="fc" id="L114">            thresholdObesidadeLeve -= 1;</span>
+<span class="fc" id="L115">            thresholdObesidadeModerada -= 1;</span>
+        }
+
+<span class="fc bfc" id="L118" title="All 2 branches covered.">        if (imc &lt; thresholdAbaixoPeso) {</span>
+<span class="fc" id="L119">            return &quot;Abaixo do peso&quot;;</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">        } else if (imc &lt;= thresholdNormal) {</span>
+<span class="fc" id="L121">            return &quot;Peso normal&quot;;</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">        } else if (imc &lt;= thresholdObesidadeLeve) {</span>
+<span class="fc" id="L123">            return &quot;Obesidade leve&quot;;</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        } else if (imc &lt;= thresholdObesidadeModerada) {</span>
+<span class="fc" id="L125">            return &quot;Obesidade moderada&quot;;</span>
+        } else {
+<span class="fc" id="L127">            return &quot;Obesidade mórbida&quot;;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

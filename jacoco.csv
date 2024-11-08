@@ -1,0 +1,7 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+fitapp,helenocampos.github.io.fitapp.service,GenderService,2,28,0,0,1,7,1,2,1,2
+fitapp,helenocampos.github.io.fitapp,AppConfig,0,7,0,0,0,2,0,2,0,2
+fitapp,helenocampos.github.io.fitapp,FitappApplication,5,3,0,0,2,1,1,1,1,1
+fitapp,helenocampos.github.io.fitapp.controller,ImcController,88,127,0,24,17,41,5,18,5,6
+fitapp,helenocampos.github.io.fitapp.model,ImcResult,11,12,0,0,5,5,3,2,3,2
+fitapp,helenocampos.github.io.fitapp.model,ImcGenderResult,25,0,0,0,10,0,5,0,5,0
