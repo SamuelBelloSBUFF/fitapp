@@ -31,6 +31,15 @@ public class ImcController {
         return "imcGenderForm";
     }
 
+    /**
+     * 
+     * Método que realiza a request para o formulário de imc.
+     * 
+     * @param peso  Peso do usário
+     * @param altura    Altura do usuário
+     * @param model Model do usuário
+     * @return  Retornará o formulário de Imc
+     */
     @PostMapping("/imc")
     public String proccessImcRequest(@RequestParam("peso") double peso,
             @RequestParam("altura") double altura,
@@ -44,12 +53,28 @@ public class ImcController {
         return "imcForm";
     }
 
+    /**
+     * Método que calcula o Imc
+     * 
+     * @param peso Peso do usuário
+     * @param altura Altura do usuário
+     * @return Retornará a classificação da tabela imc e o Imc do usuário.
+     */
     public ImcResult proccessImc(double peso, double altura) {
         double imc = this.getIMC(peso, altura);
         String resultado = this.getIMCClassification(imc);
         return new ImcResult(resultado, imc);
     }
 
+    /**
+     * 
+     * Processa o Imc baseado no genero do usuário, processo parte da identificação do gênero a partir do nome do usuário.
+     * 
+     * @param peso  Peso do usuário
+     * @param altura    Altura do usuário
+     * @param nome  Nome do usuário
+     * @return  Retornará a classificação da tabela imc, o imc do usuário, gênero do usuário e o endereço url onde API buscou o nome.
+     */
     public ImcGenderResult proccessImcGender(double peso, double altura, String nome) {
         double imc = this.getIMC(peso, altura);
         String gender = genderService.getGenderByName(nome);
@@ -58,6 +83,16 @@ public class ImcController {
         return new ImcGenderResult(resultado, imc, gender, genderURL);
     }
 
+    /**
+     * 
+     * Método que processa a requisição do usuário e persiste seu gênero, altura e nome em uma model.
+     * 
+     * @param peso  Peso do usuário
+     * @param altura    Altura do usuário
+     * @param nome  Nome do usuário
+     * @param model Model do usuário
+     * @return  Retornará a classificação da tabela imc, o imc do usuário, gênero do usuário e o endereço url onde API buscou o nome.
+     */
     @PostMapping("/imcGender")
     public String processImcGenderRequest(@RequestParam("peso") double peso,
             @RequestParam("altura") double altura,
@@ -73,6 +108,13 @@ public class ImcController {
         return "imcGenderForm";
     }
 
+    /**
+     * 
+     * Método que traduz os gêneros do usário do inglês para o português
+     * 
+     * @param gender Gênero do usuário.
+     * @return  Retornará o gênero do usuário ou gênero indefinido traduzido em português.
+     */
     public String getGeneroPt(String gender) {
         if (gender.equals("male")) {
             return "Masculino";
@@ -83,10 +125,26 @@ public class ImcController {
         }
     }
 
+
+    /**
+     * 
+     * Método que cálcula a divisão de peso pelo produto da altura com altura.
+     * 
+     * @param peso  Peso do usuário
+     * @param altura    Altura do usuário
+     * @return  Retornará o Imc
+     */
     public double getIMC(double peso, double altura) {
         return peso / (altura * altura);
     }
 
+    /**
+     * 
+     * Método que classifica o estado físico do usuário de acordo com seu Imc
+     * 
+     * @param imc   Imc do usuário.
+     * @return  Retornará uma descrição sobre o estado físico do usuário.
+     */
     public String getIMCClassification(double imc) {
         if (imc < 18.8) {
             return "Abaixo do peso";
@@ -103,6 +161,14 @@ public class ImcController {
         }
     }
 
+    /**
+     * 
+     * Método classifica o estado físico do usuário de acordo com seu Imc e filtra essa classificação de acordo com gênero do usuário.
+     * 
+     * @param imc   Imc do usuário.
+     * @param gender    Gênero do usuário.
+     * @return  Retornará uma descrição sobre o estado físico do usuário.
+     */
     public String getIMCClassificationByGender(double imc, String gender) {
         double thresholdAbaixoPeso = 20;
         double thresholdNormal = 24.9;
